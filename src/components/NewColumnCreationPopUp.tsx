@@ -32,7 +32,6 @@ export const NewColumnCreationPopUp = ({ isOpen, onClose, onSubmit, selectedColu
   const handleSubmit = () => {
     let hasError = false;
 
-    // Validate column name
     if (!columnName.trim()) {
       setNameError("Column name is required");
       hasError = true;
@@ -40,7 +39,6 @@ export const NewColumnCreationPopUp = ({ isOpen, onClose, onSubmit, selectedColu
       setNameError("");
     }
 
-    // Validate expression
     if (!expression.trim()) {
       setExpressionError("Math expression is required");
       hasError = true;
@@ -50,7 +48,6 @@ export const NewColumnCreationPopUp = ({ isOpen, onClose, onSubmit, selectedColu
 
     if (!hasError) {
       onSubmit({ columnName, expression, selectedColumns });
-      // Reset form
       setColumnName("New Column");
       setExpression("");
       onClose();

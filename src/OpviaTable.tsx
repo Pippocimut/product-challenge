@@ -28,7 +28,7 @@ const OpviaTable: React.FC = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedColumns, setSelectedColumns] = useState<string[]>([]);
 
-  const numberOfRows = 95;
+  const numberOfRows = 95; //Could have done the same by checking how long the dummy data went.
 
   const onSelectColumn = (selectedRegions: IRegion[]) => {
     if (!selectedRegions || selectedRegions.length === 0)
@@ -53,14 +53,25 @@ const OpviaTable: React.FC = () => {
     setSelectedColumns(columnNames);
   };
 
+  const createColumnName = (i: number, columnName: string): string => {
+    const columnNames = columns.map(column => column.columnId);
+    const returnedColumnName = (columnName + ' ' + i).toLowerCase().replace(/\s/g, '_');
+    if (!columnNames.includes(returnedColumnName))
+      return returnedColumnName;
+    else
+      return createColumnName(i + 1, columnName);
+  };
+
   const handleNewColumnSubmit = ({ columnName, expression }: { columnName: string, expression: string }) => {
     const allColumnNames = columns.map(column => column.columnId);
     const colNamesInExpression = allColumnNames.filter(name => expression.includes(name));
 
+    const columnId = createColumnName(0,columnName);
+
     columns.push({
       columnName,
       columnType: 'calculation',
-      columnId: columnName.toLowerCase().replace(/\s/g, '_'),
+      columnId: columnId,
       calculations: (rowIndex: number) => {
         const scope = colNamesInExpression.reduce((acc, curr) => {
           const columnIndex = columns.findIndex(column => column.columnId === curr);
@@ -75,6 +86,7 @@ const OpviaTable: React.FC = () => {
 
           return acc;
         }, {} as Record<string, number>);
+
         return evaluate(expression, scope);
       },
     });

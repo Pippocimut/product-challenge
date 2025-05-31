@@ -28,6 +28,15 @@ export const AggregationsTable = ({
     columnIndex: number,
   ): string => `${columnIndex}-${rowIndex}`;
 
+  const createColumnName = (i: number, columnName: string): string => {
+    const columnNames = columns.map(column => column.columnId);
+    const returnedColumnName = (columnName + ' ' + i).toLowerCase().replace(/\s/g, '_');
+    if (!columnNames.includes(returnedColumnName))
+      return returnedColumnName;
+    else
+      return createColumnName(i + 1, columnName);
+  };
+
   const handleNewAggColumnSubmit = ({ columnName, expression }: { columnName: string, expression: string }) => {
     const allColumnNames = columns.map(column => column.columnId);
     const colNamesInExpression = allColumnNames.filter(name => expression.includes(name));
@@ -50,10 +59,12 @@ export const AggregationsTable = ({
       return acc;
     }, {});
 
+    const columnId = createColumnName(0, columnName);
+
     aggColumns.push({
       columnName,
       columnType: 'calculation',
-      columnId: columnName.toLowerCase().replace(/\s/g, '_'),
+      columnId: columnId,
       calculations: () => evaluate(expression, scope),
     });
 
